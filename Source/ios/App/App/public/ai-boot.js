@@ -10,10 +10,17 @@
   try{
     var own=/^(capacitor|ionic|file):$/.test(location.protocol)||location.hostname==='127.0.0.1'||location.hostname==='localhost';
     if(own&&!localStorage.getItem('drugcopeia-ai-migrated-v1')){
-      ['reminders-v1','reminder-taken-v1','custom-drugs-v1','calc-history','study-stats','theme','language','type-scale','offline-mode','ai-settings-v1'].forEach(function(k){
-        var old=localStorage.getItem('dawaya-'+k);
-        if(old!==null&&localStorage.getItem('drugcopeia-ai-'+k)===null)localStorage.setItem('drugcopeia-ai-'+k,old);
-      });
+      var v;
+      v=localStorage.getItem('dawaya-reminders-v1');if(v!==null&&localStorage.getItem('drugcopeia-ai-reminders-v1')===null)localStorage.setItem('drugcopeia-ai-reminders-v1',v);
+      v=localStorage.getItem('dawaya-reminder-taken-v1');if(v!==null&&localStorage.getItem('drugcopeia-ai-reminder-taken-v1')===null)localStorage.setItem('drugcopeia-ai-reminder-taken-v1',v);
+      v=localStorage.getItem('dawaya-custom-drugs-v1');if(v!==null&&localStorage.getItem('drugcopeia-ai-custom-drugs-v1')===null)localStorage.setItem('drugcopeia-ai-custom-drugs-v1',v);
+      v=localStorage.getItem('dawaya-calc-history');if(v!==null&&localStorage.getItem('drugcopeia-ai-calc-history')===null)localStorage.setItem('drugcopeia-ai-calc-history',v);
+      v=localStorage.getItem('dawaya-study-stats');if(v!==null&&localStorage.getItem('drugcopeia-ai-study-stats')===null)localStorage.setItem('drugcopeia-ai-study-stats',v);
+      v=localStorage.getItem('dawaya-theme');if(v!==null&&localStorage.getItem('drugcopeia-ai-theme')===null)localStorage.setItem('drugcopeia-ai-theme',v);
+      v=localStorage.getItem('dawaya-language');if(v!==null&&localStorage.getItem('drugcopeia-ai-language')===null)localStorage.setItem('drugcopeia-ai-language',v);
+      v=localStorage.getItem('dawaya-type-scale');if(v!==null&&localStorage.getItem('drugcopeia-ai-type-scale')===null)localStorage.setItem('drugcopeia-ai-type-scale',v);
+      v=localStorage.getItem('dawaya-offline-mode');if(v!==null&&localStorage.getItem('drugcopeia-ai-offline-mode')===null)localStorage.setItem('drugcopeia-ai-offline-mode',v);
+      v=localStorage.getItem('dawaya-ai-settings-v1');if(v!==null&&localStorage.getItem('drugcopeia-ai-ai-settings-v1')===null)localStorage.setItem('drugcopeia-ai-ai-settings-v1',v);
       localStorage.setItem('drugcopeia-ai-migrated-v1','1');
     }
   }catch(_){}
