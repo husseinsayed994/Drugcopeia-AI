@@ -173,3 +173,6 @@ html.ai-only .ai-welcome-mark svg{width:100%;height:100%}
 @media(max-width:600px){html.ai-only .ai-welcome-mark{width:52px;height:52px}}
 html.ai-only .ai-send,html.ai-only .ai-stop{width:38px;height:38px}
 html.ai-only .ai-send::before{width:20px;height:20px;-webkit-mask-size:100% 100%;mask-size:100% 100%}
+/* r203: arrow exactly centered in the circle */
+html.ai-only .ai-send{position:relative;padding:0;display:block}
+html.ai-only .ai-send::before{position:absolute;top:50%;left:50%;margin:0;transform:translate(-50%,-50%)}
