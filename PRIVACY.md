@@ -1,6 +1,6 @@
-# Dawaya privacy
+# Drugcopeia AI privacy
 
-Dawaya (Drugcopeia) is an offline-first medicine reference. This document is the
+Drugcopeia AI is an offline-first, chat-first medicine information assistant. This document is the
 human-readable companion to `Source/privacy.config.json`, which the build-time gate
 (`Source/scripts/privacy-check.py`) enforces: any drift between this document, the
 configuration, and the code fails the build.
@@ -23,13 +23,31 @@ parties.
 
 The app talks to the network only for user-initiated actions, and only to the hosts
 allowlisted in `privacy.config.json`: the World Health Organization, the US FDA and
-NCBI services for news and reference updates, and loopback (127.0.0.1 / localhost) for
-the on-device model server. A runtime gate in `webapp/net.js` replaces `fetch`,
+NCBI services for news and reference updates. The only other download is the optional
+on-device assistant model (about 1.1 GB), fetched once after you turn Offline mode off
+and press Download. The primary source is the GitHub release `model-v3` of
+`husseinsayed994/Drugcopeia-AI`, which redirects to GitHub's release CDN hosts
+(`release-assets.githubusercontent.com`, `objects.githubusercontent.com`); the original
+release on `hussein-elnagmy/Drugcopeia` and Hugging Face are mirrors. The file is checked
+against a pinned SHA-256 before it is used. On Windows the model runs in a local helper
+process that accepts requests only from the app itself (Origin, Sec-Fetch-Site and Host
+checks); nothing leaves the device. The web build has no loopback access at all. A
+runtime gate in `webapp/net.js` replaces `fetch`,
 `XMLHttpRequest`, `WebSocket`, `EventSource` and `sendBeacon` so nothing else can leave
 the device. An offline mode switch blocks even the allowlisted hosts. Reference links
 (such as MedlinePlus, NHS, WHO, FDA, EDA, MoHP, DailyMed, PubMed, NCBI and doi.org)
 are only ever opened, on a tap, in a separate browser view; the app never fetches,
 preloads, frames or screenshots them and sends them no referrer.
+
+## Web build
+
+The web app uses grounded smart search; the downloadable model is offered only where the
+browser can run it (it needs threads and enough memory; phones are told it is
+unavailable). The content security policy has no inline scripts, no wildcard hosts and
+no loopback hosts. The service worker caches only complete same-origin responses. The
+assistant gives no free-form answer for pregnancy, breastfeeding, interaction, kidney,
+child-dose or dose questions: it answers only from retrieved sources or says it has no
+data.
 
 ## Permissions
 
