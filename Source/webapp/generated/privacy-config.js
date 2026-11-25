@@ -175,8 +175,7 @@
       "drugcopeia-ai-offline-mode",
       "drugcopeia-ai-news-v1",
       "drugcopeia-ai-ai-model-state-v1",
-      "drugcopeia-ai-ai-settings-v1",
-      "drugcopeia-ai-migrated-v1"
+      "drugcopeia-ai-ai-settings-v1"
     ]
   }
 });
