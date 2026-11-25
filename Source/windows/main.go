@@ -222,13 +222,15 @@ func (a *app) serve(ln net.Listener) {
 	})
 	// On-device assistant: model storage, downloads and generation all stay on
 	// loopback; see llm.go for the outbound-host allowlist.
-	a.llm.routes(mux)
+	llmMux := http.NewServeMux()
+	a.llm.routes(llmMux)
+	mux.Handle("/__dawaya/llm/", localOnly(a.url, llmMux))
 	// Every link the reader taps: news, a reference, a source citation, a pack photograph.
 	// The offline database holds no picture of a pack and the app page holds no remote
 	// content, so the real pages only exist on the open web. The page asks this launcher —
 	// over loopback, on the tap that asked for it — to open a second browser window;
 	// nothing is ever loaded inside the Dawaya window itself.
-	mux.HandleFunc("/__dawaya/browser", a.handleBrowserWindow)
+	mux.Handle("/__dawaya/browser", localOnly(a.url, http.HandlerFunc(a.handleBrowserWindow)))
 	// Static-only file server. The former /__dawaya/images Bing proxy is gone: the
 	// binary performs no outbound requests.
 	mux.Handle("/", withHeaders(spaHandler(sub)))
