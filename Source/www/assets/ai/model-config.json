@@ -6,8 +6,9 @@
     "version": 3,
     "name": "Qwen2.5-1.5B-Instruct (GGUF, Q4_K_M)",
     "fileName": "qwen2.5-1.5b-instruct-q4_k_m.gguf",
-    "url": "https://github.com/hussein-elnagmy/Drugcopeia/releases/download/model-v3/qwen2.5-1.5b-instruct-q4_k_m.gguf",
+    "url": "https://github.com/husseinsayed994/Drugcopeia-AI/releases/download/model-v3/qwen2.5-1.5b-instruct-q4_k_m.gguf",
     "mirrorUrls": [
+      "https://github.com/hussein-elnagmy/Drugcopeia/releases/download/model-v3/qwen2.5-1.5b-instruct-q4_k_m.gguf",
       "https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct-GGUF/resolve/main/qwen2.5-1.5b-instruct-q4_k_m.gguf"
     ],
     "sizeBytes": 1117320736,

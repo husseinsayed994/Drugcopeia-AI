@@ -199,13 +199,19 @@
       "host": "github.com",
       "suffix": "",
       "scheme": "https",
-      "purpose": "Serves the model file pinned as a release asset of the app's own repository (hussein-elnagmy/Drugcopeia, tag model-v3) and redirects it to GitHub's asset CDN."
+      "purpose": "Serves the model file pinned as a release asset of the app's own repository (husseinsayed994/Drugcopeia-AI, tag model-v3) and redirects it to GitHub's asset CDN."
     },
     {
-      "host": "",
-      "suffix": ".githubusercontent.com",
+      "host": "release-assets.githubusercontent.com",
+      "suffix": "",
       "scheme": "https",
-      "purpose": "GitHub release asset CDN (release-assets / objects) that delivers the bytes. Matched by DNS suffix."
+      "purpose": "GitHub release asset CDN that delivers the model bytes."
+    },
+    {
+      "host": "objects.githubusercontent.com",
+      "suffix": "",
+      "scheme": "https",
+      "purpose": "Older GitHub release asset CDN host, still used for some redirects."
     }
   ],
   "maxRedirects": 5

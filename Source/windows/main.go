@@ -251,19 +251,18 @@ func withHeaders(next http.Handler) http.Handler {
 		w.Header().Set("Referrer-Policy", "no-referrer")
 		// Same policy as the <meta> tag in webapp/index.html: self plus the
 		// allowlisted news and Wikimedia Commons hosts, no frames, no objects,
-		// no form posts. Keep the inline allowances the page actually needs
-		// (boot theme + service worker). The model hosts are reachable only
+		// no form posts. No inline scripts or style blocks (only style attributes).
+		// The model hosts are reachable only
 		// through DawayaNet.modelDownload (the one-time model download), and the
 		// wasm + blob-worker allowances are for the vendored wllama runtime, the
 		// web fallback when the loopback helper is absent.
 		w.Header().Set("Content-Security-Policy",
 			"default-src 'self'; base-uri 'none'; object-src 'none'; frame-src 'none'; "+
-				"form-action 'none'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; "+
+				"form-action 'none'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self'; style-src-attr 'unsafe-inline'; "+
 				"img-src 'self' data: blob:; font-src 'self' data:; media-src 'self' blob: data:; "+
 				"connect-src 'self' https://www.who.int https://api.fda.gov https://eutils.ncbi.nlm.nih.gov "+
 				"https://commons.wikimedia.org https://thumb.wikimedia.org https://upload.wikimedia.org "+
-				"https://huggingface.co https://*.hf.co https://github.com https://*.githubusercontent.com "+
-				"http://127.0.0.1:* http://localhost:*; worker-src 'self' blob:; manifest-src 'self'; "+
+				"https://huggingface.co https://*.hf.co https://github.com https://release-assets.githubusercontent.com https://objects.githubusercontent.com; worker-src 'self' blob:; manifest-src 'self'; "+
 				"frame-ancestors 'none'")
 		if r.URL.Path == "/" || strings.HasSuffix(r.URL.Path, ".html") {
 			w.Header().Set("Cache-Control", "no-cache")

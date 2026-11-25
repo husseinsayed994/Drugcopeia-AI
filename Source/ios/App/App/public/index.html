@@ -5,14 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <!--
     Defense in depth for the network gate in net.js. connect-src lists exactly the hosts in privacy.config.json (the model hosts huggingface.co and *.hf.co are reachable only through DawayaNet.modelDownload, after the reader presses Download); a request to anything else is stopped by
-    the browser before net.js is even consulted. 'unsafe-inline' is limited to
-    the two bootstrap scripts in this file and the one inline style attribute
-    the medicine list renders; 'wasm-unsafe-eval' is there for the vendored
+    the browser before net.js is even consulted. there is no inline script
+    (the theme bootstrap and the service worker registration are boot-theme.js and
+    sw-register.js); inline style attributes are allowed through style-src-attr only,
+    and there are no inline style blocks; 'wasm-unsafe-eval' is there for the vendored
     wllama runtime (WebAssembly cannot run without it) and worker-src blob: for
     its inference workers; there is no eval anywhere in the app.
   -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'none'; object-src 'none'; frame-src 'none'; form-action 'none'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; media-src 'self' blob: data:; connect-src 'self' https://www.who.int https://api.fda.gov https://eutils.ncbi.nlm.nih.gov https://commons.wikimedia.org https://thumb.wikimedia.org https://upload.wikimedia.org https://huggingface.co https://*.githubusercontent.com https://github.com https://*.hf.co http://127.0.0.1:* http://localhost:*; worker-src 'self' blob:; manifest-src 'self'">
-  <meta name="theme-color" content="#1b5fc2">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'none'; object-src 'none'; frame-src 'none'; form-action 'none'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self'; style-src-attr 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; media-src 'self' blob: data:; connect-src 'self' https://www.who.int https://api.fda.gov https://eutils.ncbi.nlm.nih.gov https://commons.wikimedia.org https://thumb.wikimedia.org https://upload.wikimedia.org https://huggingface.co https://release-assets.githubusercontent.com https://objects.githubusercontent.com https://github.com https://*.hf.co; worker-src 'self' blob:; manifest-src 'self'">
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#212121" media="(prefers-color-scheme: dark)">
+  <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Drugcopeia AI">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -21,10 +24,10 @@
   <link rel="icon" href="assets/red-crescent-rx-192.png" type="image/png">
   <meta name="description" content="Search medicines in Egypt by brand, generic name, manufacturer, or price. Simple pharmacology and medicine information.">
   <title>Drugcopeia AI</title>
-  <script src="ai-boot.js?v=200"></script>
-  <script>(()=>{try{const saved=localStorage.getItem('drugcopeia-ai-theme');document.documentElement.dataset.theme=saved==='dark'||(saved!=='light'&&matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light'}catch(_){document.documentElement.dataset.theme=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}try{const scale=Number(localStorage.getItem('drugcopeia-ai-type-scale'));if(Number.isFinite(scale)&&scale>=.9&&scale<=1.3)document.documentElement.style.setProperty('--type-scale',String(scale))}catch(_){}try{if(localStorage.getItem('drugcopeia-ai-language')==='ar'){document.documentElement.lang='ar';document.documentElement.dir='rtl'}}catch(_){}})();</script>
-  <link rel="stylesheet" href="styles.css?v=200">
-  <link rel="stylesheet" href="ai-shell.css?v=200">
+  <script src="ai-boot.js?v=201"></script>
+  <script src="boot-theme.js?v=201"></script>
+  <link rel="stylesheet" href="styles.css?v=201">
+  <link rel="stylesheet" href="ai-shell.css?v=201">
 </head>
 <body data-view="home">
   <a class="skip-link" href="#mainContent" data-i18n="skipToContent">Skip to main content</a>
@@ -970,31 +973,31 @@
 <a class="drawer-link" href="#about" data-app-nav="about"><svg class="nav-icon" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-info"></use></svg><span data-i18n="navAbout">About Drugcopeia</span></a>
 <button class="drawer-link" type="button" data-app-nav="privacy"><svg class="nav-icon" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-lock"></use></svg><span data-i18n="navPrivacy">Privacy</span></button>
 </nav><div class="drawer-bottom"><p class="drawer-safety-note" data-i18n="drawerSafetyNote">For information only. Ask a healthcare professional.</p><button class="drawer-settings" type="button" data-app-nav="settings"><svg class="nav-icon" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-settings"></use></svg><span class="drawer-settings-copy"><strong data-i18n="navSettings">Settings</strong><small data-settings-summary>Follow system · 100%</small></span><span class="utility-chevron" aria-hidden="true">›</span></button></div></aside></div>
-  <script src="generated/privacy-config.js?v=200"></script>
-  <script src="net.js?v=200"></script>
-  <script src="ios-shell.js?v=200"></script>
-  <script src="core.js?v=200"></script>
-  <script src="lab-tests.js?v=200"></script>
-  <script src="clinical-tools.js?v=200"></script>
-  <script src="reading.js?v=200"></script>
-  <script src="news.js?v=200"></script>
-  <script src="app.js?v=200"></script>
-  <script src="alt-map.js?v=200"></script>
-  <script src="same-spec.js?v=200"></script>
-  <script src="features.js?v=200"></script>
-  <script src="ai/text.js?v=200"></script>
-  <script src="ai/search-index.js?v=200"></script>
-  <script src="ai/safety.js?v=200"></script>
-  <script src="ai/retrieval.js?v=200"></script>
-  <script src="ai/llm-bridge.js?v=200"></script>
-  <script src="ai/wasm-bridge.js?v=200"></script>
-  <script src="ai/model-manager.js?v=200"></script>
-  <script src="ai/pipeline.js?v=200"></script>
-  <script src="ai/secure-history.js?v=200"></script>
-  <script src="ai/photo-ask.js?v=200"></script>
-  <script src="ai/chat-ui.js?v=200"></script>
-  <script src="ai-extras.js?v=200"></script>
-  <script src="ai-shell.js?v=200"></script>
-  <script>let swReloaded=false;if('serviceWorker' in navigator)navigator.serviceWorker.addEventListener('controllerchange',()=>{if(swReloaded)return;swReloaded=true;location.reload()});window.addEventListener('load',()=>{const start=()=>{if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol)&&location.hostname!=='127.0.0.1'&&location.hostname!=='localhost')navigator.serviceWorker.register('./service-worker.js').catch(()=>{})};(window.requestIdleCallback||(fn=>setTimeout(fn,1500)))(start)});</script>
+  <script src="generated/privacy-config.js?v=201"></script>
+  <script src="net.js?v=201"></script>
+  <script src="ios-shell.js?v=201"></script>
+  <script src="core.js?v=201"></script>
+  <script src="lab-tests.js?v=201"></script>
+  <script src="clinical-tools.js?v=201"></script>
+  <script src="reading.js?v=201"></script>
+  <script src="news.js?v=201"></script>
+  <script src="app.js?v=201"></script>
+  <script src="alt-map.js?v=201"></script>
+  <script src="same-spec.js?v=201"></script>
+  <script src="features.js?v=201"></script>
+  <script src="ai/text.js?v=201"></script>
+  <script src="ai/search-index.js?v=201"></script>
+  <script src="ai/safety.js?v=201"></script>
+  <script src="ai/retrieval.js?v=201"></script>
+  <script src="ai/llm-bridge.js?v=201"></script>
+  <script src="ai/wasm-bridge.js?v=201"></script>
+  <script src="ai/model-manager.js?v=201"></script>
+  <script src="ai/pipeline.js?v=201"></script>
+  <script src="ai/secure-history.js?v=201"></script>
+  <script src="ai/photo-ask.js?v=201"></script>
+  <script src="ai/chat-ui.js?v=201"></script>
+  <script src="ai-extras.js?v=201"></script>
+  <script src="ai-shell.js?v=201"></script>
+  <script src="sw-register.js?v=201"></script>
 </body>
 </html>

@@ -1,8 +1,8 @@
 /* Drugcopeia AI - chat-only shell. ChatGPT / Claude style: one centered column,
    bubbles, a pill composer at the bottom, a collapsible side menu. */
 html.ai-only,html.ai-only body{height:100%;overflow:hidden;background:var(--aiBg);color:var(--aiInk);padding:0}
-html.ai-only{--aiBg:#ffffff;--aiInk:#1f2328;--aiMuted:#6b7280;--aiLine:#e5e7eb;--aiUser:#f1f3f5;--aiSide:#f7f7f8;--aiAccent:#0f766e;--aiAccentInk:#fff;--aiCol:760px}
-html.ai-only[data-theme="dark"]{--aiBg:#212121;--aiInk:#ececec;--aiMuted:#9ca3af;--aiLine:#3a3a3a;--aiUser:#2f2f2f;--aiSide:#171717;--aiAccent:#10a37f}
+html.ai-only{--aiBg:#ffffff;--aiInk:#1f2328;--aiMuted:#5b6472;--aiLine:#e5e7eb;--aiUser:#f1f3f5;--aiSide:#f7f7f8;--aiAccent:#1b5fc2;--aiAccentInk:#fff;--aiCol:760px}
+html.ai-only[data-theme="dark"]{--aiBg:#212121;--aiInk:#ececec;--aiMuted:#9ca3af;--aiLine:#3a3a3a;--aiUser:#2f2f2f;--aiSide:#171717;--aiAccent:#4a90ff;--aiAccentInk:#0b0b0b}
 html.ai-only .topbar,html.ai-only .app-sidenav,html.ai-only .bottom-nav,html.ai-only #drawerBackdrop,html.ai-only .search-top{display:none!important}
 html.ai-only .app-workspace,html.ai-only #mainContent{display:block;max-width:none;margin:0;padding:0;height:100%}
 html.ai-only #mainContent>section:not(#assistantPage):not(.ai-only-page){display:none!important}
@@ -37,7 +37,7 @@ html.ai-only .ai-msg{display:flex;gap:12px;margin:18px auto;align-items:flex-sta
 html.ai-only .ai-msg-user{justify-content:flex-end}
 html.ai-only .ai-msg-user .ai-bubble{background:var(--aiUser);border-radius:20px;padding:10px 16px;max-width:82%;border:0;color:var(--aiInk);line-height:1.6;font-size:.98rem}
 html.ai-only .ai-msg-bot .ai-bubble{background:transparent;border:0;padding:0;flex:1;min-width:0;color:var(--aiInk);line-height:1.75;font-size:.98rem;box-shadow:none}
-html.ai-only .ai-avatar{flex:none;width:30px;height:30px;border-radius:50%;background:var(--aiAccent);color:#fff;display:grid;place-items:center;font-size:.8rem;font-weight:700}
+html.ai-only .ai-avatar{flex:none;width:30px;height:30px;border-radius:50%;background:var(--aiAccent);color:var(--aiAccentInk);display:grid;place-items:center;font-size:.8rem;font-weight:700}
 html.ai-only .ai-avatar svg{width:18px;height:18px}
 html.ai-only .ai-card,html.ai-only .ai-sources,html.ai-only .ai-pillars,html.ai-only .ai-call,html.ai-only .ai-general-note{border:1px solid var(--aiLine);border-radius:14px;background:var(--aiSide);color:var(--aiInk)}
 html.ai-only .ai-disclaimer{font-size:.74rem;color:var(--aiMuted)}
@@ -56,7 +56,7 @@ html.ai-only .ai-attach{width:36px;height:36px;border-radius:50%;border:0;backgr
 html.ai-only .ai-attach::before{content:"+";font-size:1.5rem;line-height:1;color:var(--aiInk)}
 /* welcome + suggestions */
 .ai-welcome{text-align:center;padding:9vh 8px 10px}
-.ai-welcome-mark{width:54px;height:54px;margin:0 auto 14px;border-radius:50%;background:var(--aiAccent);color:#fff;display:grid;place-items:center;font-size:1.5rem;font-weight:700}
+.ai-welcome-mark{width:54px;height:54px;margin:0 auto 14px;border-radius:50%;background:var(--aiAccent);color:var(--aiAccentInk);display:grid;place-items:center;font-size:1.5rem;font-weight:700}
 .ai-welcome h1{margin:0 0 6px;font-size:1.6rem;font-weight:700}
 .ai-welcome p{margin:0 auto 18px;max-width:34em;color:var(--aiMuted);font-size:.95rem;line-height:1.6}
 .ai-chips{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;max-width:var(--aiCol);margin:0 auto}
@@ -116,7 +116,7 @@ html.ai-only .ai-embedded-tool .clinical-picker-list{z-index:5}
 .ai-mode{margin:0 0 4px}
 .ai-seg{display:flex;margin:4px 12px 0;border:1px solid var(--aiLine);border-radius:999px;padding:3px;background:var(--aiBg)}
 .ai-seg-btn{flex:1;border:0;border-radius:999px;padding:7px 10px;background:transparent;color:var(--aiInk);font:600 .84rem inherit;cursor:pointer}
-.ai-seg-btn.on{background:var(--aiAccent);color:#fff}
+.ai-seg-btn.on{background:var(--aiAccent);color:var(--aiAccentInk)}
 .ai-mode-note{margin:6px 14px 0;font-size:.74rem;color:var(--aiMuted)}
 .ai-overlay{position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;padding:14px}
 .ai-overlay-box{width:100%;max-width:560px;max-height:86vh;overflow:auto;background:var(--aiBg);color:var(--aiInk);border-radius:18px;padding:14px 16px 16px;box-shadow:0 12px 40px rgba(0,0,0,.3)}
@@ -142,7 +142,7 @@ html.ai-only .ai-embedded-tool .clinical-picker-list{z-index:5}
   html.ai-only.ai-printing,html.ai-only.ai-printing body{height:auto!important;overflow:visible!important}
 }
 html.ai-only .ai-seg-btn{font-family:inherit}
-html.ai-only .ai-seg-btn.on{background:var(--aiAccent);color:#fff}
+html.ai-only .ai-seg-btn.on{background:var(--aiAccent);color:var(--aiAccentInk)}
 html.ai-only .ai-seg-btn:not(.on){color:var(--aiInk)}
 html.ai-only .ai-embedded-tool h1,html.ai-only .ai-embedded-tool .clinical-title,html.ai-only .ai-embedded-tool .feat-title{font-size:1.25rem;line-height:1.3;margin:6px 0}
 html.ai-only .ai-embedded-tool h2{font-size:1.05rem}
@@ -158,7 +158,7 @@ html.ai-only .ai-send::before{content:"";width:18px;height:18px;background:var(-
 html.ai-only .ai-tool{width:36px;height:36px;border-radius:50%;border:0;background:transparent;color:var(--aiInk);display:grid;place-items:center;cursor:pointer;flex:none;padding:0}
 html.ai-only .ai-tool:hover{background:var(--aiUser)}
 html.ai-only .ai-tool svg{width:20px;height:20px;display:block}
-html.ai-only .ai-tool.is-listening{background:var(--aiAccent);color:#fff}
+html.ai-only .ai-tool.is-listening{background:var(--aiAccent);color:var(--aiAccentInk)}
 html.ai-only .ai-attach,html.ai-only .ai-attach[hidden]{display:grid!important;font-size:0}
 html.ai-only .ai-attach::before{content:"";width:20px;height:20px;background:var(--aiInk);-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 8h3l2-3h6l2 3h3v11H4z'/%3E%3Ccircle cx='12' cy='13' r='3.5'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 8h3l2-3h6l2 3h3v11H4z'/%3E%3Ccircle cx='12' cy='13' r='3.5'/%3E%3C/svg%3E") center/contain no-repeat}
 .ai-scan-ov{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.72);display:grid;place-items:center;padding:16px}

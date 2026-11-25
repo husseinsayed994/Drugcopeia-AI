@@ -1051,7 +1051,6 @@ def check_drift():
         return
     csp = csp_match.group(1)
     expected_connect = {"'self'"} | {"%s://%s" % (entry["scheme"], entry["host"]) for entry in REMOTE}
-    expected_connect |= {"http://127.0.0.1:*", "http://localhost:*"}
     # The one-time model download: the web/PWA runtime fetches the pinned model
     # file through DawayaNet.modelDownload, so the model hosts are connect-src
     # entries (exact host, or a wildcard for the CDN suffix) without ever
