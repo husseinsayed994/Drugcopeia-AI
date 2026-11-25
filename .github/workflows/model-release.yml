@@ -1,0 +1,34 @@
+# Publishes the pinned on-device model as a release asset of THIS repository
+# (tag model-v3), so the app no longer depends on another account's repository.
+# The file is downloaded from the previous home, checked against the SHA-256
+# pinned in model-config.json, and only then uploaded. It does nothing when the
+# release already has the asset.
+name: model-release
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/model-release.yml'
+permissions:
+  contents: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Publish model-v3 if missing
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          NAME=$(jq -r .model.fileName Source/webapp/assets/ai/model-config.json)
+          SHA=$(jq -r .model.sha256 Source/webapp/assets/ai/model-config.json)
+          SIZE=$(jq -r .model.sizeBytes Source/webapp/assets/ai/model-config.json)
+          if gh release view model-v3 --json assets -q '.assets[].name' 2>/dev/null | grep -qx "$NAME"; then
+            echo "model-v3 already has $NAME"; exit 0
+          fi
+          curl -fL --retry 3 -o "$NAME" "https://github.com/hussein-elnagmy/Drugcopeia/releases/download/model-v3/$NAME"
+          test "$(stat -c%s "$NAME")" = "$SIZE"
+          echo "$SHA  $NAME" | sha256sum -c -
+          gh release view model-v3 >/dev/null 2>&1 || gh release create model-v3 --title "Model v3 (Qwen2.5-1.5B-Instruct Q4_K_M)" --notes "On-device model pinned by Source/webapp/assets/ai/model-config.json. SHA-256 $SHA. Original model: Qwen/Qwen2.5-1.5B-Instruct-GGUF (Apache-2.0)."
+          gh release upload model-v3 "$NAME" --clobber
