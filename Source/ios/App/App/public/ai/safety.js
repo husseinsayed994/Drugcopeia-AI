@@ -617,8 +617,22 @@
     return { ok: reasons.length === 0, reasons };
   }
 
+  /* Questions where a free-written sentence can hurt (pregnancy, breastfeeding, interactions,
+     kidney or liver impairment, children, dose questions). The pipeline never lets the model
+     write these from its own knowledge. */
+  function highRiskIntent(text) {
+    const cfg = requirePolicy();
+    const terms = (((cfg.general || {}).blockedIntents) || {}).terms || [];
+    const haystack = T().normalize(text);
+    return terms.some(term => {
+      const value = T().normalize(term);
+      return value && (value.length <= 3 ? hits(haystack, term) : haystack.includes(value));
+    });
+  }
+
   const api = {
     configure,
+    highRiskIntent,
     isCommonWord,
     isStopword,
     sanitize,

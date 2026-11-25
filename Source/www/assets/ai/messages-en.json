@@ -80,7 +80,8 @@
     "openSource": "Open in browser",
     "searchMedicine": "Open medicine cards in Drugcopeia",
     "smartSearchBody": "No on-device model is available. These are matching product/reference records, not a single clinical answer. Brand names may cover different ingredients and strengths: pick the exact product and verify its current label. Prices are saved database values, not live quotes.",
-    "verifyHeader": "Official sources to verify"
+    "verifyHeader": "Official sources to verify",
+    "highRiskBody": "These are matching records, not a single clinical answer. This question touches pregnancy, breastfeeding, interactions, kidney or liver disease, children or a dose, so no generated summary is shown. Read the records and the official sources, use the matching tool in the menu, and confirm with a pharmacist or doctor."
   },
   "refusal": {
     "offTopic": "I cannot help with that one - medicines and health are my specialty. Ask me about a medicine, an ingredient, a symptom or a lab test and I am all ears.",
@@ -113,7 +114,8 @@
     "body": "No matching record was found in the database or in the documents stored on this device, and I will not guess. Try the trade name or the active ingredient, or read about it on an international reference site:",
     "tryNames": "Type the trade name in English or Arabic, the company, or the active ingredient.",
     "readAlso": "Read on recognised international sites",
-    "doctorNote": "Those sites give general information only. A diagnosis and a treatment plan need a doctor."
+    "doctorNote": "Those sites give general information only. A diagnosis and a treatment plan need a doctor.",
+    "highRiskBody": "No source in this app supports an answer to this question, so I will not write one from general knowledge. Pregnancy, breastfeeding, interactions, kidney or liver disease, children and dose questions need a checked source. Use the official sources below, the interaction checker, the pregnancy list or the pediatric calculator in the menu, and confirm with a pharmacist or doctor."
   },
   "general": {
     "label": "General information",

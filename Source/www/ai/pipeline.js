@@ -254,6 +254,12 @@
       note('general:skipped', !rules.enabled ? 'policy' : !template ? 'no-prompt' : 'no-model');
       return null;
     }
+    /* Pregnancy, breastfeeding, interactions, kidney or liver disease, children and dose
+       questions are never answered from the model's own knowledge. */
+    if (context.safety.highRiskIntent(question)) {
+      note('general:blocked', 'high-risk-intent');
+      return null;
+    }
     const loaded = await context.model.ensureLoaded();
     mark('loadModel');
     if (!loaded.ok) {
@@ -535,9 +541,10 @@
         ? context.retrieval.referenceLinks(result.question || clean.text) : [];
       const general = await generalAnswer(clean.text, answerIn, historyBlock(history), links, result, mark, note, timings, local);
       if (general) return general;
+      const highRisk = context.safety.highRiskIntent(clean.text);
       return withDisclaimer({
         type: 'noData',
-        text: message('noData.body'),
+        text: message(highRisk ? 'noData.highRiskBody' : 'noData.body'),
         title: message('noData.title'),
         hint: message('noData.tryNames'),
         links,
@@ -564,13 +571,14 @@
     const officialTitle = official.length ? message('answer.verifyHeader') : '';
 
     /* no model on this device or build: smart search answers with the card, never a guess */
-    if (!modelUsable() || !context.runtime.available()) {
+    const highRiskAsk = context.safety.highRiskIntent(askedText);
+    if (!modelUsable() || !context.runtime.available() || highRiskAsk) {
       mark('smartSearch');
-      note('generate:skipped', 'no-model');
+      note('generate:skipped', highRiskAsk ? 'high-risk-intent' : 'no-model');
       return withDisclaimer({
         type: 'card',
         mode: 'smart-search',
-        text: message('answer.smartSearchBody'),
+        text: message(highRiskAsk ? 'answer.highRiskBody' : 'answer.smartSearchBody'),
         card,
         conflict: pack.conflict,
         conflictNote: pack.conflict ? message('answer.conflictNote') : '',
