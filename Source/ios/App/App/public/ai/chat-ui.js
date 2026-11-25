@@ -430,7 +430,7 @@
       dom.smartWhy.hidden = !showWhy;
       if (showWhy) {
         const device = model().device || {};
-        dom.smartWhy.textContent = text('capability.why', {
+        dom.smartWhy.textContent = device.reason === 'web-single-thread' ? text('capability.webWhy') : text('capability.why', {
           minRam: `${Math.round((device.minRamMb || 2600) / 1024)} GB`,
           ram: device.ramMb ? `${(device.ramMb / 1024).toFixed(1)} GB` : '—'
         });

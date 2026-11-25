@@ -63,7 +63,8 @@
   "capability": {
     "why": "Running the model needs at least {minRam}. This device reports {ram}.",
     "fallbackTitle": "Smart search will be used",
-    "ramUnknown": "The exact memory size could not be read; performance may be poor."
+    "ramUnknown": "The exact memory size could not be read; performance may be poor.",
+    "webWhy": "The web version cannot run the on-device model fast enough (the browser has no multi-threading here). Smart search is used instead. The Android, iPhone, Mac and Windows apps run the model on the device."
   },
   "answer": {
     "sourcesHeader": "Sources",

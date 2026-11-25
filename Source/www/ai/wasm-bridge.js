@@ -372,9 +372,12 @@
       } catch (_) {}
       const deviceMemory = global.navigator && typeof global.navigator.deviceMemory === 'number' ? global.navigator.deviceMemory : 0;
       return {
-        supported: Boolean(environmentOk(env) && env.gate),
+        /* r201: without cross-origin isolation (GitHub Pages cannot send COOP/COEP) the wasm
+           runtime is single-threaded, which is too slow and memory-hungry for a phone. The web
+           build then answers with smart search; the native apps run the model. */
+        supported: Boolean(environmentOk(env) && env.gate && env.threads !== false),
         reason: !env.wasm ? 'no-webassembly' : !env.opfs ? 'no-opfs' : !env.streaming ? 'no-streams'
-          : !env.gate ? 'privacy-gate-missing' : '',
+          : !env.gate ? 'privacy-gate-missing' : env.threads === false ? 'web-single-thread' : '',
         backends: ['cpu'],
         totalRamBytes: deviceMemory ? Math.round(deviceMemory * 1024 * 1024 * 1024) : 0,
         freeRamBytes: 0,
