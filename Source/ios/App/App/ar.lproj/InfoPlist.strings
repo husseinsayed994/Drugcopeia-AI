@@ -1,1 +1,4 @@
 "CFBundleDisplayName" = "Drugcopeia";
+"NSCameraUsageDescription" = "يفتح Drugcopeia AI الكاميرا فقط عند الضغط على مسح الكود، أو عند إرفاق صورة بسؤال للمساعد. ما تلتقطه يُقرأ على هذا الجهاز (كود العلبة أو النص المطبوع) ولا يُحفظ ولا يُرسل.";
+"NSMicrophoneUsageDescription" = "يستخدم Drugcopeia AI الميكروفون فقط أثناء البحث الصوتي لتحويل اسم الدواء المنطوق إلى نص بحث. لا يحفظ التطبيق الصوت ولا يرسله.";
+"NSSpeechRecognitionUsageDescription" = "يحوّل Drugcopeia AI اسم الدواء المنطوق إلى نص في خانة البحث. التعرف على الكلام تجريه خدمة الكلام في النظام.";

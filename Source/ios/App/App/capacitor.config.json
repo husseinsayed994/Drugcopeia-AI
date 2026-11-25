@@ -1,6 +1,6 @@
 {
-  "appId": "com.dawaya.medicineguide",
-  "appName": "Drugcopeia",
+  "appId": "app.drugcopeia.ai",
+  "appName": "Drugcopeia AI",
   "webDir": "www",
   "backgroundColor": "#F8F9FA",
   "loggingBehavior": "none",

@@ -1,1 +1,4 @@
 "CFBundleDisplayName" = "Drugcopeia";
+"NSCameraUsageDescription" = "Drugcopeia AI opens the camera only when you tap Scan code, or when you attach a photo to a question in the assistant. What you capture is decoded on this device - the box code, or the printed label text - and is never stored or sent.";
+"NSMicrophoneUsageDescription" = "Drugcopeia AI uses the microphone only while voice search is listening, to turn your spoken medicine name into search text. Drugcopeia AI does not store or transmit the audio.";
+"NSSpeechRecognitionUsageDescription" = "Drugcopeia AI turns your spoken medicine name into text for the search field. Recognition is performed by the system speech service.";

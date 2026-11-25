@@ -106,12 +106,24 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Assistant suite (176 cases)
+      - name: Assistant suite
         working-directory: Source
         run: node tests/ai/run-tests.js
       - name: Privacy gate
         working-directory: Source
         run: python3 scripts/privacy-check.py
+      - name: All web copies agree on the revision
+        working-directory: Source
+        run: node scripts/sync-all.mjs --check
+      - name: iOS project checks
+        working-directory: Source
+        run: node scripts/verify-project.mjs
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: Source/windows/go.mod
+      - name: Windows helper origin guard
+        working-directory: Source/windows
+        run: go test -run TestLocalOnly .
       - name: Vendored wllama runtime matches its pinned hashes
         working-directory: Source/webapp/ai/vendor/wllama
         run: |
