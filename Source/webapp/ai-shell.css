@@ -176,3 +176,11 @@ html.ai-only .ai-send::before{width:20px;height:20px;-webkit-mask-size:100% 100%
 /* r203: arrow exactly centered in the circle */
 html.ai-only .ai-send{position:relative;padding:0;display:block}
 html.ai-only .ai-send::before{position:absolute;top:50%;left:50%;margin:0;transform:translate(-50%,-50%)}
+/* r204: patient/doctor segmented control, same look on every browser and theme */
+html.ai-only .ai-seg{background:var(--aiBg);border:1px solid var(--aiLine)}
+html.ai-only .ai-seg-btn{-webkit-appearance:none;appearance:none;background:transparent;color:var(--aiInk);border:0;font-family:inherit;font-size:.88rem;font-weight:600;-webkit-tap-highlight-color:transparent;transition:none;opacity:1}
+html.ai-only .ai-seg-btn:hover,html.ai-only .ai-seg-btn:active,html.ai-only .ai-seg-btn:focus{background:transparent;color:var(--aiInk);outline:none}
+html.ai-only .ai-seg-btn:focus-visible{outline:2px solid #1b5fc2;outline-offset:1px}
+html.ai-only .ai-seg-btn.on,html.ai-only .ai-seg-btn.on:hover,html.ai-only .ai-seg-btn.on:active,html.ai-only .ai-seg-btn.on:focus,html.ai-only .ai-seg-btn[aria-pressed="true"]{background:#1b5fc2;color:#fff;-webkit-text-fill-color:#fff}
+html.ai-only[data-theme="dark"] .ai-seg-btn.on,html.ai-only[data-theme="dark"] .ai-seg-btn.on:hover,html.ai-only[data-theme="dark"] .ai-seg-btn.on:active,html.ai-only[data-theme="dark"] .ai-seg-btn.on:focus,html.ai-only[data-theme="dark"] .ai-seg-btn[aria-pressed="true"]{background:#2f6fd6;color:#fff;-webkit-text-fill-color:#fff}
+html.ai-only .ai-seg-btn:not(.on){-webkit-text-fill-color:currentColor}
