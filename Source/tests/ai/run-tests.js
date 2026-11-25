@@ -2146,6 +2146,27 @@ async function main() {
     includesText(generated, 'huggingface.co', 'the pinned model host is there');
   });
 
+
+  /* ================= dose rules: review metadata and golden values ================= */
+  const GOLDEN = {
+    paracetamol: { perDose: [10, 15], maxPerDose: 1000, maxDoses: 5, maxDailyPerKg: 75, maxDaily: 4000 },
+    ibuprofen: null, amoxicillin: null, amoxicillin_clavulanate: null, azithromycin: null
+  };
+  await test('dose rules: every rule carries review metadata and a source', () => {
+    for (const med of CLINICAL.doseMedicines || []) {
+      if (!med.review || !['unreviewed', 'reviewed'].includes(med.review.status)) throw new Error(`${med.id}: review block missing`);
+      if (med.review.status === 'reviewed' && (!med.review.reviewer || !med.review.reviewedOn)) throw new Error(`${med.id}: reviewed without reviewer and date`);
+      if (!Array.isArray(med.sources) || !med.sources.length) throw new Error(`${med.id}: no sources`);
+    }
+    if (!(CLINICAL.doseMedicines || []).length) throw new Error('no dose rules loaded');
+  });
+  await test('dose rules: paracetamol golden values do not change without review', () => {
+    const med = CLINICAL.doseMedicines.find(item => item.id === 'paracetamol');
+    for (const [key, value] of Object.entries(GOLDEN.paracetamol)) {
+      if (JSON.stringify(med[key]) !== JSON.stringify(value)) throw new Error(`paracetamol ${key} changed to ${JSON.stringify(med[key])}`);
+    }
+  });
+
   /* ================= summary ================= */
   const failed = results.filter(result => !result.ok);
   console.log('');

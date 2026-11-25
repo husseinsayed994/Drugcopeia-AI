@@ -23,6 +23,7 @@
   const doseMedicines = [
     {
       id: 'paracetamol',
+      review: { status: 'unreviewed', source: 'see sources[] and the product label', reviewer: null, reviewedOn: null },
       en: 'Paracetamol (acetaminophen)',
       ar: 'باراسيتامول (أسيتامينوفين)',
       type: 'perDose',
@@ -63,6 +64,7 @@
     },
     {
       id: 'ibuprofen',
+      review: { status: 'unreviewed', source: 'see sources[] and the product label', reviewer: null, reviewedOn: null },
       en: 'Ibuprofen',
       ar: 'إيبوبروفين',
       type: 'perDose',
@@ -103,6 +105,7 @@
     },
     {
       id: 'amoxicillin',
+      review: { status: 'unreviewed', source: 'see sources[] and the product label', reviewer: null, reviewedOn: null },
       en: 'Amoxicillin',
       ar: 'أموكسيسيلين',
       type: 'perDay',
@@ -138,6 +141,7 @@
     },
     {
       id: 'amoxicillin_clavulanate',
+      review: { status: 'unreviewed', source: 'see sources[] and the product label', reviewer: null, reviewedOn: null },
       en: 'Amoxicillin + clavulanic acid',
       ar: 'أموكسيسيلين + حمض كلافولانيك',
       type: 'perDay',
@@ -174,6 +178,7 @@
     },
     {
       id: 'azithromycin',
+      review: { status: 'unreviewed', source: 'see sources[] and the product label', reviewer: null, reviewedOn: null },
       en: 'Azithromycin',
       ar: 'أزيثرومايسين',
       type: 'phases',
