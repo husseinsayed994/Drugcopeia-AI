@@ -2135,6 +2135,16 @@ async function main() {
     assert(!worker.includes('wllama.wasm'), 'the 11 MB wasm binary is fetched on demand, never precached');
   });
 
+  await test('the chat-only shell hides the directory rail and footer', () => {
+    /* The safety rail switches on at 1280px+ in styles.css and its aside comes after main in
+       the DOM, so it painted above the fixed chat page on wide screens (r207). */
+    const shell = readTextFile(`${WEBAPP}/ai-shell.css`);
+    includesText(shell, 'html.ai-only .safety-rail', 'ai-only mode switches the safety rail off');
+    includesText(shell, 'html.ai-only .app-workspace>footer', 'and the workspace footer');
+    const page = readTextFile(`${WEBAPP}/index.html`);
+    includesText(page, 'ai-shell.css', 'the page loads the chat-only shell');
+  });
+
   await test('the privacy gate knows the model download door', () => {
     const net = readTextFile(`${WEBAPP}/net.js`);
     includesText(net, 'modelDownload', 'net.js exposes the gated model download');

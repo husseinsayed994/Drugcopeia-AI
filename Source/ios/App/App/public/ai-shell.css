@@ -4,6 +4,10 @@ html.ai-only,html.ai-only body{height:100%;overflow:hidden;background:var(--aiBg
 html.ai-only{--aiBg:#ffffff;--aiInk:#1f2328;--aiMuted:#5b6472;--aiLine:#e5e7eb;--aiUser:#f1f3f5;--aiSide:#f7f7f8;--aiAccent:#1b5fc2;--aiAccentInk:#fff;--aiCol:760px}
 html.ai-only[data-theme="dark"]{--aiBg:#212121;--aiInk:#ececec;--aiMuted:#9ca3af;--aiLine:#3a3a3a;--aiUser:#2f2f2f;--aiSide:#171717;--aiAccent:#4a90ff;--aiAccentInk:#0b0b0b}
 html.ai-only .topbar,html.ai-only .app-sidenav,html.ai-only .bottom-nav,html.ai-only #drawerBackdrop,html.ai-only .search-top{display:none!important}
+/* The safety rail and page footer belong to the directory workspace. At 1280px+ the rail
+   switches on in styles.css, and its sticky inner paints above the fixed chat page (the
+   aside comes after main in the DOM), covering answers on wide Windows and desktop screens. */
+html.ai-only .safety-rail,html.ai-only .app-workspace>footer{display:none!important}
 html.ai-only .app-workspace,html.ai-only #mainContent{display:block;max-width:none;margin:0;padding:0;height:100%}
 html.ai-only #mainContent>section:not(#assistantPage):not(.ai-only-page){display:none!important}
 html.ai-only[data-ai-page="other"] #mainContent>section.ai-only-page{display:block!important;max-width:820px;margin:0 auto;padding:60px 20px 40px;height:100%;overflow:auto;background:var(--aiBg)}
