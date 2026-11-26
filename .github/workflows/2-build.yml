@@ -213,7 +213,7 @@ jobs:
         run: |
           R=$(tr -d '[:space:]' < Source/REVISION)
           for i in 1 2 3 4; do
-            if gh release view "r${R}" --json assets --jq '.assets|length' 2>/dev/null | grep -qx 5; then break; fi
+            # Always recreate so rebuilt assets replace stale ones.
             gh release delete "r${R}" -y >/dev/null 2>&1 || true
             gh release create "r${R}" release/* \
               --title "Drugcopeia AI r${R}" \
