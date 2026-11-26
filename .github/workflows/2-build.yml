@@ -44,14 +44,41 @@ jobs:
           cp "$ANDROID_NDK_LATEST_HOME"/toolchains/llvm/prebuilt/linux-x86_64/lib/clang/*/lib/linux/aarch64/libomp.so \
             "$JNILIBS/libomp.so"
           file "$JNILIBS/libllamaserver.so"
-      - name: Build debug APK
+      - name: Build APK (release-signed when the keystore secret exists, else debug)
         working-directory: Source/android
+        env:
+          KS_B64: ${{ secrets.ANDROID_KEYSTORE_B64 }}
+          KS_PW: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
         run: |
           rm -f local.properties
-          ./gradlew assembleDebug --no-daemon --stacktrace
+          if [ -n "$KS_B64" ] && [ -n "$KS_PW" ]; then
+            printf '%s' "$KS_B64" | base64 -d > release.p12
+            {
+              echo "storeFile=release.p12"
+              echo "storePassword=$KS_PW"
+              echo "keyAlias=drugcopeia"
+              echo "keyPassword=$KS_PW"
+            } > keystore.properties
+            ./gradlew assembleRelease --no-daemon --stacktrace
+            rm -f release.p12 keystore.properties
+            echo "APK_KIND=release" >> "$GITHUB_ENV"
+          else
+            ./gradlew assembleDebug --no-daemon --stacktrace
+            echo "APK_KIND=debug" >> "$GITHUB_ENV"
+          fi
+      - name: Verify APK signature
+        run: |
+          APK=$(ls Source/android/app/build/outputs/apk/*/*.apk | head -1)
+          echo "APK: $APK ($APK_KIND)"
+          APKSIGNER=$(ls "$ANDROID_HOME"/build-tools/*/apksigner | sort -V | tail -1)
+          "$APKSIGNER" verify --verbose --print-certs "$APK" | tee /tmp/apksig.txt
+          if [ "$APK_KIND" = release ]; then
+            grep -q 'CN=Hussein El-Nagmy, O=Drugcopeia' /tmp/apksig.txt
+            echo "Android APK signed with the Drugcopeia release key." >> $GITHUB_STEP_SUMMARY
+          fi
       - name: Verify AI runtime inside APK
         run: |
-          APK=$(ls Source/android/app/build/outputs/apk/debug/*.apk | head -1)
+          APK=$(ls Source/android/app/build/outputs/apk/*/*.apk | head -1)
           unzip -l "$APK" | grep -E 'lib/arm64-v8a/lib(llamaserver|omp)\.so'
           echo 'APK bundles libllamaserver.so (llama.cpp b11985, built from pinned source in CI) and libomp.so: on-device assistant runtime included.' >> $GITHUB_STEP_SUMMARY
       - uses: actions/upload-artifact@v4
