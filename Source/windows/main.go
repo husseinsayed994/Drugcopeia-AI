@@ -231,6 +231,10 @@ func (a *app) serve(ln net.Listener) {
 	// over loopback, on the tap that asked for it — to open a second browser window;
 	// nothing is ever loaded inside the Dawaya window itself.
 	mux.Handle("/__dawaya/browser", localOnly(a.url, http.HandlerFunc(a.handleBrowserWindow)))
+	// The page's native bridge: an external same-origin script, because the CSP
+	// (script-src 'self') blocks the inline injection that used to deliver it -
+	// which silently disabled the on-device model on every Windows install.
+	mux.HandleFunc("/__dawaya/bridge.js", serveWindowsBridge)
 	// Static-only file server. The former /__dawaya/images Bing proxy is gone: the
 	// binary performs no outbound requests.
 	mux.Handle("/", withHeaders(spaHandler(sub)))
@@ -278,10 +282,11 @@ func spaHandler(root fs.FS) http.Handler {
 	index, err := fs.ReadFile(root, "index.html")
 	if err == nil {
 		/* The launcher, not the page, knows whether the embedded runtime is present:
-		   announce the loopback transport before any app script runs. The same tag
-		   hands the page the one native call the Windows shell can make. */
+		   announce the loopback transport before any app script runs. The page CSP
+		   (script-src 'self') blocks inline scripts, so the bridge is served as an
+		   external file and only the script tag is injected. */
 		index = []byte(strings.Replace(string(index), "<head>",
-			"<head>\n  <script>window.DawayaLLMTransport = 'windows';</script>\n"+windowsBridgeScript, 1))
+			"<head>\n  <script src=\"/__dawaya/bridge.js\"></script>", 1))
 	}
 	serveIndex := func(w http.ResponseWriter, r *http.Request) {
 		if index == nil {
@@ -325,7 +330,7 @@ func spaHandler(root fs.FS) http.Handler {
    link opens. Offline mode is read in the page, from the same gate every other
    platform consults, and a refusal there is final: the app never retries a blocked
    address through the ordinary browser. */
-const windowsBridgeScript = `<script>
+const windowsBridgeScript = `window.DawayaLLMTransport = 'windows';
 window.DawayaNative = Object.freeze({
   openInAppBrowser: function (url) {
     var href = String(url || '');
@@ -343,7 +348,17 @@ window.DawayaNative = Object.freeze({
       .catch(function () { return { presented: false, target: 'unavailable' }; });
   }
 });
-</script>`
+`
+
+/* serveWindowsBridge hands the page its one native surface as an external,
+   same-origin script: the page CSP allows script-src 'self' only, so the
+   bridge cannot be injected inline. */
+func serveWindowsBridge(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/javascript; charset=utf-8")
+	w.Header().Set("Cache-Control", "no-store")
+	w.Header().Set("X-Content-Type-Options", "nosniff")
+	_, _ = w.Write([]byte(windowsBridgeScript))
+}
 
 func (a *app) handleBrowserWindow(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Cache-Control", "no-store")
