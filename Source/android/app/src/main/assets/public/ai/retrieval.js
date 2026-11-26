@@ -360,6 +360,7 @@
       id: hit.id,
       score: hit.score,
       exactName: hit.exactName,
+      drug,
       fields: {
         tradeNameEn: drug.commercial_name_en || '',
         tradeNameAr: drug.commercial_name_ar || '',
@@ -503,6 +504,7 @@
       kind: 'card',
       label: 'بطاقة الدواء من قاعدة البيانات',
       medicines: medicines.map(record => ({
+        id: record.id,
         tradeNameAr: record.fields.tradeNameAr,
         tradeNameEn: record.fields.tradeNameEn,
         ingredient: record.fields.ingredient,
@@ -834,6 +836,163 @@
     };
   }
 
+  /* ---------- focused smart-search answers ---------- */
+
+  /* The action chips under a card and the reader's own words ask for one aspect of a
+     medicine (its alternatives, its interactions, its dose, pregnancy safety). Without a
+     model the pipeline shows the database card; the focus tells it which aspect of the
+     card is the answer, instead of repeating the same full card for every question. */
+  function intentFocus(text) {
+    const hay = ' ' + T().normalize(text || '') + ' ';
+    const any = words => words.some(word => hay.includes(T().normalize(word)));
+    if (any(['بدائل', 'بديل', 'مثيل', 'مرادف', 'جنيس']) || any(['alternative', 'substitut', 'equivalent', 'generic'])) return 'alternatives';
+    if (any(['تفاعل', 'تداخل']) || any(['interact'])) return 'interactions';
+    if (any(['حمل', 'حامل', 'رضاع', 'مرضع']) || any(['pregnan', 'breastfeed', 'lactat', 'nursing'])) return 'pregnancy';
+    if (any(['جرع']) || any(['dose', 'dosage', 'how much', 'how many'])) return 'dose';
+    return '';
+  }
+
+  /* Same-spec alternatives from the app's own price comparison (same ingredient, strength,
+     form and route; anything that cannot prove a field is dropped). Price comparison only. */
+  let specIndex = null;
+  let specIndexLen = -1;
+  function alternativesFor(records, options) {
+    const SS = global.DawayaSameSpec;
+    const drugs = Array.isArray(data.drugs) ? data.drugs : [];
+    const meds = (records || []).filter(record => record.kind === 'medicine' && record.drug).slice(0, 3);
+    if (!SS || !meds.length || !drugs.length) return null;
+    if (!specIndex || specIndexLen !== drugs.length) {
+      specIndex = SS.buildIndex(drugs);
+      specIndexLen = drugs.length;
+    }
+    /* The top hit can be a vial or a pack the comparison cannot read; try the next hits. */
+    let result = null;
+    let askedDrug = null;
+    for (const med of meds) {
+      const attempt = SS.compare(med.drug, specIndex);
+      if (attempt && attempt.status === 'ok' && attempt.rows.length) {
+        result = attempt;
+        askedDrug = med.drug;
+        break;
+      }
+    }
+    if (!result) return null;
+    const asked = T().compact(`${askedDrug.commercial_name_en || ''}|${askedDrug.commercial_name_ar || ''}`);
+    const limit = (options && options.limit) || 8;
+    return result.rows
+      .filter(row => T().compact(`${row.drug.commercial_name_en || ''}|${row.drug.commercial_name_ar || ''}`) !== asked)
+      .slice(0, limit)
+      .map(row => ({
+        tradeNameAr: row.drug.commercial_name_ar || '',
+        tradeNameEn: row.drug.commercial_name_en || '',
+        ingredient: row.drug.scientific_name || '',
+        manufacturer: row.drug.manufacturer || '',
+        drugClass: row.drug.drug_class || '',
+        route: row.drug.route || '',
+        priceEgp: row.drug.price_egp === undefined || row.drug.price_egp === null ? '' : row.drug.price_egp,
+        notes: null,
+        interactions: [],
+        sourceLabel: sourceLabel(drugSource(row.drug), options && options.language),
+        source: drugSource(row.drug)
+      }));
+  }
+
+  /* Sourced per-ingredient monographs (U.S. FDA labels via openFDA/DailyMed), the same
+     bundle the medicines directory shows. Loaded once, on demand. */
+  let monoCache = null;
+  let monoPromise = null;
+  function loadMonographs() {
+    if (monoCache) return Promise.resolve(monoCache);
+    if (!monoPromise) {
+      monoPromise = fetch('assets/monographs.json', { cache: 'force-cache' })
+        .then(response => (response.ok ? response.json() : null))
+        .then(payload => { monoCache = payload && payload.items ? payload : null; return monoCache; })
+        .catch(() => null);
+    }
+    return monoPromise;
+  }
+  function monoClean(value) {
+    return String(value || '').toLowerCase().replace(/[+/,;._()\-]+/g, ' ').replace(/\s+/g, ' ').trim();
+  }
+  async function monographsFor(records) {
+    const mono = await loadMonographs();
+    const out = new Map();
+    if (!mono) return out;
+    for (const record of records || []) {
+      if (record.kind !== 'medicine') continue;
+      const parts = String(record.fields.ingredient || '').split(/[+,;]/);
+      const found = [];
+      const seen = new Set();
+      for (const part of parts) {
+        for (const variant of [part, String(part).replace(/\([^)]*\)/g, ' ')]) {
+          const hit = mono.index[monoClean(variant)];
+          if (hit !== undefined && !seen.has(hit)) {
+            seen.add(hit);
+            found.push(mono.items[hit]);
+          }
+        }
+      }
+      if (found.length) out.set(record.id, found.slice(0, 3));
+    }
+    return out;
+  }
+
+  /* Curated pregnancy/breastfeeding preview (assets/data/pregnancy-safety.json), the same
+     lookup the medicines directory uses: exact or alias name, salt words dropped. */
+  const PREG_SALTS = ['HYDROCHLORIDE', 'HCL', 'SODIUM', 'POTASSIUM', 'CALCIUM', 'MAGNESIUM', 'SULFATE', 'SULPHATE', 'PHOSPHATE', 'MALEATE', 'FUMARATE', 'TARTRATE', 'MESYLATE', 'BESYLATE', 'ACETATE', 'SUCCINATE', 'NITRATE', 'DIHYDRATE', 'MONOHYDRATE', 'TRIHYDRATE', 'HYDRATE', 'BASE', 'SALT'];
+  let pregCache = null;
+  let pregPromise = null;
+  let pregMap = null;
+  function pregNorm(value) {
+    return String(value || '').toUpperCase().replace(/\(.*?\)/g, ' ').replace(/[^A-Z0-9+\s.-]/g, ' ').replace(/\s+/g, ' ').trim();
+  }
+  function loadPregnancy() {
+    if (pregCache) return Promise.resolve(pregCache);
+    if (!pregPromise) {
+      pregPromise = fetch('assets/data/pregnancy-safety.json', { cache: 'force-cache' })
+        .then(response => (response.ok ? response.json() : null))
+        .then(payload => { pregCache = payload && payload.entries ? payload : null; return pregCache; })
+        .catch(() => null);
+    }
+    return pregPromise;
+  }
+  function pregFind(name) {
+    if (!pregCache) return null;
+    if (!pregMap) {
+      pregMap = new Map();
+      Object.keys(pregCache.entries).forEach(key => {
+        const entry = pregCache.entries[key];
+        pregMap.set(pregNorm(key), entry);
+        (entry.aliases || []).forEach(alias => { if (!pregMap.has(pregNorm(alias))) pregMap.set(pregNorm(alias), entry); });
+      });
+    }
+    const n = pregNorm(name);
+    if (!n) return null;
+    if (pregMap.has(n)) return pregMap.get(n);
+    const words = n.split(' ');
+    while (words.length > 1 && PREG_SALTS.indexOf(words[words.length - 1]) >= 0) {
+      words.pop();
+      if (pregMap.has(words.join(' '))) return pregMap.get(words.join(' '));
+    }
+    return null;
+  }
+  async function pregnancyFor(records) {
+    const preg = await loadPregnancy();
+    const out = new Map();
+    if (!preg) return out;
+    for (const record of records || []) {
+      if (record.kind !== 'medicine') continue;
+      const parts = String(record.fields.ingredient || '').split('+').map(part => String(part).replace(/\(.*?\)/g, '').trim()).filter(Boolean);
+      const found = [];
+      for (const part of parts) {
+        const entry = pregFind(part);
+        if (entry) found.push({ ingredient: part, entry });
+      }
+      if (found.length) out.set(record.id, { items: found, disclaimer: preg.disclaimer || null, updated: preg.updated || '' });
+    }
+    return out;
+  }
+
   const api = {
     configure,
     build,
@@ -846,6 +1005,10 @@
     safetyFlags,
     clinicalFor,
     interactionsFor,
+    intentFocus,
+    alternativesFor,
+    monographsFor,
+    pregnancyFor,
     entities,
     officialLinks,
     stats,

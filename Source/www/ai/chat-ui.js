@@ -707,8 +707,20 @@
     wrapper.className = 'ai-card';
     const heading = document.createElement('h4');
     const documentsOnly = (card.documents || []).length > 0 && !(card.medicines || []).length;
-    heading.textContent = text(documentsOnly ? 'answer.docCardLabel' : 'answer.cardLabel');
+    heading.textContent = card.focusLabel || text(documentsOnly ? 'answer.docCardLabel' : 'answer.cardLabel');
     wrapper.append(heading);
+    if (card.focusNote) {
+      const note = document.createElement('p');
+      note.className = 'ai-card-note';
+      note.textContent = card.focusNote;
+      wrapper.append(note);
+    }
+    if (card.focusEmpty) {
+      const empty = document.createElement('p');
+      empty.className = 'ai-card-note';
+      empty.textContent = card.focusEmpty;
+      wrapper.append(empty);
+    }
     for (const med of card.medicines || []) {
       const block = document.createElement('div');
       block.className = 'ai-card-med';
@@ -748,6 +760,60 @@
         p.className = `ai-card-interaction is-${String(pair.severity || '').toLowerCase()}`;
         p.textContent = `${pair.severity || ''}: ${pair.other || ''} — ${pair.effect || ''}`;
         block.append(p);
+      }
+      for (const dose of med.dose || []) {
+        const p = document.createElement('p');
+        p.className = 'ai-card-note';
+        p.textContent = `${dose.title ? dose.title + ' — ' : ''}${dose.text || ''}`;
+        block.append(p);
+        if (dose.source && dose.source.dailymed) {
+          const source = document.createElement('p');
+          source.className = 'ai-card-source';
+          const link = document.createElement('a');
+          link.href = dose.source.dailymed;
+          link.target = '_blank';
+          link.rel = 'noopener noreferrer';
+          link.textContent = `${dose.source.name || 'DailyMed'} ${dose.source.label_date || ''}`.trim();
+          source.append(link);
+          block.append(source);
+        }
+      }
+      if (med.pregnancy) {
+        for (const found of med.pregnancy.items || []) {
+          const entry = found.entry || {};
+          const pregText = language === 'en' ? (entry.preg_en || entry.preg_ar) : (entry.preg_ar || entry.preg_en);
+          const lactText = language === 'en' ? (entry.lact_en || entry.lact_ar) : (entry.lact_ar || entry.lact_en);
+          for (const value of [pregText, lactText]) {
+            if (!value) continue;
+            const p = document.createElement('p');
+            p.className = 'ai-card-note';
+            p.textContent = `${found.ingredient}: ${value}`;
+            block.append(p);
+          }
+        }
+        if (med.pregnancy.disclaimer) {
+          const disc = document.createElement('p');
+          disc.className = 'ai-card-note';
+          disc.textContent = language === 'en' ? (med.pregnancy.disclaimer.en || med.pregnancy.disclaimer.ar || '') : (med.pregnancy.disclaimer.ar || med.pregnancy.disclaimer.en || '');
+          if (disc.textContent) block.append(disc);
+        }
+      }
+      for (const mono of med.monoPregnancy || []) {
+        const p = document.createElement('p');
+        p.className = 'ai-card-note';
+        p.textContent = `${mono.title ? mono.title + ' — ' : ''}${mono.text || ''}`;
+        block.append(p);
+        if (mono.source && mono.source.dailymed) {
+          const source = document.createElement('p');
+          source.className = 'ai-card-source';
+          const link = document.createElement('a');
+          link.href = mono.source.dailymed;
+          link.target = '_blank';
+          link.rel = 'noopener noreferrer';
+          link.textContent = `${mono.source.name || 'DailyMed'} ${mono.source.label_date || ''}`.trim();
+          source.append(link);
+          block.append(source);
+        }
       }
       if (med.sourceLabel) {
         const source = document.createElement('p');

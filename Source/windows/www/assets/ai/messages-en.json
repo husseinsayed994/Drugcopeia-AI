@@ -82,7 +82,16 @@
     "searchMedicine": "Open medicine cards in Drugcopeia",
     "smartSearchBody": "No on-device model is available. These are matching product/reference records, not a single clinical answer. Brand names may cover different ingredients and strengths: pick the exact product and verify its current label. Prices are saved database values, not live quotes.",
     "verifyHeader": "Official sources to verify",
-    "highRiskBody": "These are matching records, not a single clinical answer. This question touches pregnancy, breastfeeding, interactions, kidney or liver disease, children or a dose, so no generated summary is shown. Read the records and the official sources, use the matching tool in the menu, and confirm with a pharmacist or doctor."
+    "highRiskBody": "These are matching records, not a single clinical answer. This question touches pregnancy, breastfeeding, interactions, kidney or liver disease, children or a dose, so no generated summary is shown. Read the records and the official sources, use the matching tool in the menu, and confirm with a pharmacist or doctor.",
+    "altCardLabel": "Matching alternatives in the database",
+    "altNote": "Same ingredient, strength and form. Price comparison only, not a treatment recommendation. Ask a pharmacist or doctor before any change.",
+    "noAlternatives": "No products with the same ingredient, strength and form in the database.",
+    "interCardLabel": "Known drug interactions",
+    "noInteractions": "No interactions are recorded for this medicine in the app references; that does not mean none exist. Check the current label and ask a pharmacist.",
+    "doseLabel": "Dosage from the drug label",
+    "noDose": "No dosage information for this ingredient in the app references. Check the current product label or ask a pharmacist.",
+    "pregLabel": "Pregnancy and breastfeeding",
+    "pregNoData": "No pregnancy or breastfeeding information for this ingredient in the app references. That does not mean it is safe; check with a doctor before use."
   },
   "refusal": {
     "offTopic": "I cannot help with that one - medicines and health are my specialty. Ask me about a medicine, an ingredient, a symptom or a lab test and I am all ears.",

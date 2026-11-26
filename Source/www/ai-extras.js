@@ -116,6 +116,9 @@
     lg.querySelectorAll('.ai-card-med').forEach(function(card){
       if(card.querySelector('.ai-card-actions'))return;
       var nameEl=card.querySelector('.ai-card-name');var name=nameEl?nameEl.textContent.trim():'';
+      /* Brand names in the database can end in a stray / . , - : drop the junk so the
+         chip question reads the clean name. */
+      name=name.replace(/[\s\/.،,-]+$/,'').trim();
       if(!name)return;
       var t=tx(),row=el('div','ai-card-actions');
       ['alt','inter','dose','preg'].forEach(function(k){

@@ -407,6 +407,62 @@
    *           from ai/photo-ask.js: {route, name, code, evidence}) }
    * history: the earlier turns of this conversation, [{role:'user'|'assistant', text}]
    */
+  /* In smart-search mode the card is the answer, and the action chips ask about one aspect
+     of the medicine (alternatives, interactions, dose, pregnancy). Refocus the card on that
+     aspect instead of showing the same full card for every question. */
+  async function applyFocus(card, askedText, records, language) {
+    const R = context.retrieval;
+    if (!R || typeof R.intentFocus !== 'function' || !card || !Array.isArray(card.medicines)) return;
+    const focus = R.intentFocus(askedText);
+    if (!focus) return;
+    card.focus = focus;
+    if (focus === 'alternatives') {
+      const rows = typeof R.alternativesFor === 'function' ? R.alternativesFor(records, { limit: 8, language }) : null;
+      card.focusLabel = message('answer.altCardLabel');
+      card.focusNote = message('answer.altNote');
+      if (rows && rows.length) card.medicines = rows;
+      else card.focusEmpty = message('answer.noAlternatives');
+      return;
+    }
+    if (focus === 'interactions') {
+      card.focusLabel = message('answer.interCardLabel');
+      let any = false;
+      card.medicines = card.medicines.map(med => {
+        if (med.interactions && med.interactions.length) any = true;
+        return Object.assign({}, med, { notes: null, dose: null, pregnancy: null, monoPregnancy: null });
+      });
+      if (!any) card.focusEmpty = message('answer.noInteractions');
+      return;
+    }
+    if (focus === 'dose' || focus === 'pregnancy') {
+      const monos = typeof R.monographsFor === 'function' ? await R.monographsFor(records) : new Map();
+      let any = false;
+      if (focus === 'dose') {
+        card.focusLabel = message('answer.doseLabel');
+        card.medicines = card.medicines.map(med => {
+          const dose = (monos.get(med.id) || [])
+            .map(item => ({ title: (item.names || [])[0] || '', text: item.sections && item.sections.dosage, source: item.source }))
+            .filter(block => block.text);
+          if (dose.length) any = true;
+          return Object.assign({}, med, { notes: null, interactions: [], dose });
+        });
+        if (!any) card.focusEmpty = message('answer.noDose');
+        return;
+      }
+      card.focusLabel = message('answer.pregLabel');
+      const preg = typeof R.pregnancyFor === 'function' ? await R.pregnancyFor(records) : new Map();
+      card.medicines = card.medicines.map(med => {
+        const entry = preg.get(med.id) || null;
+        const monoPregnancy = (monos.get(med.id) || [])
+          .map(item => ({ title: (item.names || [])[0] || '', text: item.sections && item.sections.pregnancy, source: item.source }))
+          .filter(block => block.text);
+        if (entry || monoPregnancy.length) any = true;
+        return Object.assign({}, med, { notes: null, interactions: [], pregnancy: entry, monoPregnancy });
+      });
+      if (!any) card.focusEmpty = message('answer.pregNoData');
+    }
+  }
+
   async function ask(rawQuestion, handlers, history) {
     if (!context) throw new Error('DawayaAIAssistant.configure() must run before ask()');
     const started = context.now();
@@ -575,6 +631,7 @@
     if (!modelUsable() || !context.runtime.available() || highRiskAsk) {
       mark('smartSearch');
       note('generate:skipped', highRiskAsk ? 'high-risk-intent' : 'no-model');
+      await applyFocus(card, askedText, retrieval.records, answerIn);
       return withDisclaimer({
         type: 'card',
         mode: 'smart-search',
@@ -595,6 +652,7 @@
     mark('loadModel');
     if (!loaded.ok) {
       note('load:failed', loaded.error);
+      await applyFocus(card, askedText, retrieval.records, answerIn);
       return withDisclaimer({
         type: 'card',
         mode: 'fallback',

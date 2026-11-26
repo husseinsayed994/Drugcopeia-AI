@@ -359,6 +359,16 @@ def write_dataset_meta():
                     date = line.split(":", 1)[1].strip()
         if version or date:
             break
+    # VERSION.txt no longer ships; the app release is Source/REVISION and the build date.
+    if not version:
+        revision_path = os.path.join(ROOT, "REVISION")
+        if os.path.exists(revision_path):
+            with open(revision_path, encoding="utf-8") as handle:
+                revision = handle.read().strip()
+            if revision:
+                version = f"r{revision}"
+    if not date:
+        date = datetime.date.today().isoformat()
     drugs = load_json(DRUGS_PATH, []) or []
     keys = ("source_url", "source", "indications", "contraindications", "warnings", "interactions", "leaflet_url", "barcode")
     coverage = {key: sum(1 for row in drugs if key in row) for key in keys}
