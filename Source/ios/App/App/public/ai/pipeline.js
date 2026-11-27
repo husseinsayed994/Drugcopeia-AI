@@ -413,9 +413,45 @@
   async function applyFocus(card, askedText, records, language) {
     const R = context.retrieval;
     if (!R || typeof R.intentFocus !== 'function' || !card || !Array.isArray(card.medicines)) return;
+    /* A condition or test question can name one section of the official page ("أعراض الربو",
+       "تشخيص السكري"): that section alone is the answer, so the page's other passages leave
+       the card. When no passage of it survives, the card keeps what it has. */
+    if (Array.isArray(card.documents) && card.documents.length && typeof R.intentSection === 'function') {
+      const wantedSection = R.intentSection(askedText);
+      if (wantedSection) {
+        const matching = card.documents.filter(doc => doc.section === wantedSection);
+        if (matching.length) {
+          card.documents = matching;
+          card.focus = card.focus || 'section';
+          const sectionLabel = message(`answer.sections.${wantedSection}`);
+          card.focusLabel = sectionLabel === `answer.sections.${wantedSection}` ? message('answer.docCardLabel') : sectionLabel;
+        }
+      }
+    }
     const focus = R.intentFocus(askedText);
     if (!focus) return;
     card.focus = focus;
+    if (focus === 'uses' || focus === 'effects') {
+      /* One aspect of the medicine is the answer: its medical uses or its side effects,
+         from the app's own notes, with the FDA label's indications alongside uses. The
+         rest of the card (price, company, other notes) stays out of the reply. */
+      const key = focus;
+      card.focusLabel = message(focus === 'uses' ? 'answer.usesLabel' : 'answer.effectsLabel');
+      let any = false;
+      const monos = focus === 'uses' && typeof R.monographsFor === 'function' ? await R.monographsFor(records) : new Map();
+      card.medicines = card.medicines.map(med => {
+        const kept = med.notes && med.notes[key] ? { [key]: med.notes[key] } : null;
+        const monoUses = focus === 'uses'
+          ? (monos.get(med.id) || [])
+              .map(item => ({ title: (item.names || [])[0] || '', text: item.sections && item.sections.indications, source: item.source }))
+              .filter(block => block.text)
+          : [];
+        if (kept || monoUses.length) any = true;
+        return Object.assign({}, med, { notes: kept, interactions: [], dose: null, pregnancy: null, monoPregnancy: null, monoUses });
+      });
+      if (!any) card.focusEmpty = message(focus === 'uses' ? 'answer.noUses' : 'answer.noEffects');
+      return;
+    }
     if (focus === 'alternatives') {
       const rows = typeof R.alternativesFor === 'function' ? R.alternativesFor(records, { limit: 8, language }) : null;
       card.focusLabel = message('answer.altCardLabel');

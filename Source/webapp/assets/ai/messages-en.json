@@ -91,7 +91,22 @@
     "doseLabel": "Dosage from the drug label",
     "noDose": "No dosage information for this ingredient in the app references. Check the current product label or ask a pharmacist.",
     "pregLabel": "Pregnancy and breastfeeding",
-    "pregNoData": "No pregnancy or breastfeeding information for this ingredient in the app references. That does not mean it is safe; check with a doctor before use."
+    "pregNoData": "No pregnancy or breastfeeding information for this ingredient in the app references. That does not mean it is safe; check with a doctor before use.",
+    "usesLabel": "Uses from the app references",
+    "noUses": "No uses information for this medicine in the app references. Check the current product leaflet or ask the pharmacist.",
+    "effectsLabel": "Side effects from the app references",
+    "noEffects": "No side-effect information for this medicine in the app references; that does not mean there are none. Check the current leaflet and ask the pharmacist.",
+    "sections": {
+      "Symptoms": "Symptoms",
+      "Diagnosis": "Diagnosis and tests",
+      "Treatment": "Treatment",
+      "Causes": "Causes and risk factors",
+      "Prevention": "Prevention",
+      "Complications": "Complications",
+      "Outlook": "Outlook and recovery",
+      "When to seek care": "When to see a doctor",
+      "Overview": "Overview"
+    }
   },
   "refusal": {
     "offTopic": "I cannot help with that one - medicines and health are my specialty. Ask me about a medicine, an ingredient, a symptom or a lab test and I am all ears.",

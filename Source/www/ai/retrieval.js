@@ -384,6 +384,7 @@
       id: hit.id,
       score: hit.score,
       exactName: hit.exactName,
+      section: entry.section || '',
       fields: { title: entry.title || '', text: String(entry.text || '').slice(0, 1400) },
       source: entry.source || databaseSource(),
       text: `${entry.title || ''}\n${String(entry.text || '').slice(0, 1400)}`
@@ -526,6 +527,7 @@
       documents: documents.map(record => ({
         title: record.fields.title,
         excerpt: T().truncate(record.fields.text, 700),
+        section: record.section || '',
         sourceLabel: sourceLabel(record.source, language),
         source: record.source
       })),
@@ -849,6 +851,11 @@
     if (any(['تفاعل', 'تداخل']) || any(['interact'])) return 'interactions';
     if (any(['حمل', 'حامل', 'رضاع', 'مرضع']) || any(['pregnan', 'breastfeed', 'lactat', 'nursing'])) return 'pregnancy';
     if (any(['جرع']) || any(['dose', 'dosage', 'how much', 'how many'])) return 'dose';
+    /* "What is it for" and "what does it damage" ask for one note of the card, not the card. */
+    if (any(['استخدام', 'بيستخدم', 'بيستخدمو', 'فايدة', 'فايده', 'فوائد', 'فائدة', 'بيفيد في ايه'])
+      || any(['used for', 'what is it for', ' uses', ' use of', 'benefit', 'indication'])) return 'uses';
+    if (any(['اضرار', 'أضرار', 'اعراض جانبية', 'أعراض جانبية', 'اثار جانبية', 'آثار جانبية', 'تأثيرات جانبية', 'ضرر'])
+      || any(['side effect', 'adverse'])) return 'effects';
     return '';
   }
 
@@ -1006,6 +1013,7 @@
     clinicalFor,
     interactionsFor,
     intentFocus,
+    intentSection,
     alternativesFor,
     monographsFor,
     pregnancyFor,

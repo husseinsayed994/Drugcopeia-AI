@@ -755,6 +755,23 @@
           block.append(p);
         }
       }
+      for (const use of med.monoUses || []) {
+        const p = document.createElement('p');
+        p.className = 'ai-card-note';
+        p.textContent = `${use.title ? use.title + ' — ' : ''}${use.text || ''}`;
+        block.append(p);
+        if (use.source && use.source.dailymed) {
+          const source = document.createElement('p');
+          source.className = 'ai-card-source';
+          const link = document.createElement('a');
+          link.href = use.source.dailymed;
+          link.target = '_blank';
+          link.rel = 'noopener noreferrer';
+          link.textContent = `${use.source.name || 'DailyMed'} ${use.source.label_date || ''}`.trim();
+          source.append(link);
+          block.append(source);
+        }
+      }
       for (const pair of med.interactions || []) {
         const p = document.createElement('p');
         p.className = `ai-card-interaction is-${String(pair.severity || '').toLowerCase()}`;
